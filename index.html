@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="en" >
+
+<head>
+    <meta charset="UTF-8">
+    <title>Nearby Trails</title> 
+    <link rel='stylesheet' href='https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.0.0-alpha.6/css/bootstrap.min.css'>
+    <link rel="stylesheet" href="./style.css">
+</head>
+
+<body>
+
+    <div class="container">
+        <h1 id="title">Hiking Trails</h1>
+        <h5 id="near">Near: </h5>
+        <div class="filters">
+            <p>Results: </p>
+            <select id="results" name="results">
+                <option value="10">10</option>
+                <option value="20">20</option>
+                <option value="30">30</option>
+                <option value="40">40</option>
+                <option value="50">50</option>
+            </select>
+            <p>Distance away: </p>
+            <select id="distance-away" name="distance-away">
+                <option value="10">10</option>
+                <option value="20">20</option>
+                <option value="30">30</option>
+                <option value="40">40</option>
+                <option value="50">50</option>
+            </select>
+            <p>Sort by: </p>
+            <select id="sort-by" name="sort-by">
+                <option value="quality">Quality</option>
+                <option value="distance">Distance</option>
+            </select>
+            <p>Min Length: </p>
+            <select id="min-length" name="min-length">
+                <option value="0">0</option>
+                <option value="2">2</option>
+                <option value="5">5</option>
+                <option value="10">10</option>
+            </select>
+        </div>
+        <div id="scroll-table">
+        <table class="flexme" id="table" border="0">
+            <thead>
+              <tr>
+                <th id="name">Name</th>
+                <th id="location">Location</th>
+                <th id="length">Length</th>
+                <th id="summary">Summary</th>
+                <!--<th id="image">Image</th>
+                <th id="url">URL</th>-->
+              </tr>
+            </thead>
+            <tbody>
+
+            </tbody>
+        </table>
+        </div>
+        
+    </div>
+
+    <script src='https://cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.min.js'></script>
+    <script  src="./script.js"></script>    
+</body>
