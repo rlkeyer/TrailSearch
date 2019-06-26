@@ -23,7 +23,7 @@ $(document).ready(function() {
       minLength = 0;
       hikingApi = ("https://www.hikingproject.com/data/get-trails?lat=" + lat + "&lon=" + lon + "&maxDistance=" + distanceAway + "&maxResults=" + maxResults + "&sort=" + sortBy + "&minLength=" + minLength + "&key=200378576-e3a2e829fd81fdf927812e2b50cb841b");
 
-    // Using the lat and lon, make an API call to retrieve nearby trails and append them to the html table as table rows 
+      // Using the lat and lon, make an API call to retrieve nearby trails and append them to the html table as table rows 
 
       $.getJSON(hikingApi, function(data) {
         var len = data.trails.length;
@@ -35,6 +35,7 @@ $(document).ready(function() {
             var image = data.trails[i].imgSqSmall;
             var url = data.trails[i].url;
             $('#table tbody').append('<tr><td>'+name+'</td><td>'+location+'</td><td>'+length+' '+'miles'+'</td><td>'+summary+'</td>'/*<td>'+'<img src='+image+'>'+'</td>''<td>'+url+'</td>*/+'</tr>');
+            console.log(hikingApi);
         }
       });
     });
