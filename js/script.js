@@ -1,20 +1,66 @@
 $(document).ready(function() {
-    var hikingApi;
-    var lat;
-    var lon;
-    var city;
-    var region;
+    var hikingApi 
+    var searchApi;
+    var autoLat;
+    var autoLon;
+    var autoCity;
+    var autoRegion;
     var maxResults;
     var distanceAway;
     var sortBy;
     var minLength;
     var zip;
     var zipApi;
+    var autoName;
+    var autoLocation;
+    var autoLength;
+    var autoSummary;
+    var autoImage;
+    var autoUrl;
+    var lat;
+    var lon;
+    var city;
+    var region;
+    var clicked = false;
+
+    // Set up a function that takes a url and makes an API call to retrieve and display trail data
+
+    function getTrails(apiUrl) {
+        $.getJSON(apiUrl, function(data) {
+        var len = data.trails.length;
+        for (var i = 0; i < len; i++) {
+            autoName = data.trails[i].name;
+            autoLocation = data.trails[i].location;
+            autoLength = data.trails[i].length;
+            autoSummary = data.trails[i].summary;
+            autoImage = data.trails[i].imgSqSmall;
+            autoUrl = data.trails[i].url;
+            $('#table tbody').append('<tr><td>'+ '<a href=' + autoUrl + ' target="_blank">' + autoName + '</a>' + '</td><td>'+autoLocation+'</td><td>'+autoLength+' '+'miles'+'</td><td>'+autoSummary+'</td>'/*<td>'+'<img src='+autoImage+'>'+'</td>''<td>'+autoUrl+'</td>*/+'</tr>');
+            console.log(hikingApi);
+        }
+      });
+    }
 
     // Make an API call to determine the user's latitude and longitude using their IP address
 
-    $('#zip').click( function() {
-        console.log("click worked")
+    $.getJSON("https://ipapi.co/json/", function(json) {
+      autoLat = (json.latitude);
+      autoLon = (json.longitude);
+      autoCity = (json.city);
+      autoRegion = (json.region);
+      $("#near").append(autoCity + ", " + autoRegion);
+      maxResults = 10;
+      distanceAway = 30;
+      sortBy = "quality";
+      minLength = 0;
+      hikingApi = ("https://www.hikingproject.com/data/get-trails?lat=" + autoLat + "&lon=" + autoLon + "&maxDistance=" + distanceAway + "&maxResults=" + maxResults + "&sort=" + sortBy + "&minLength=" + minLength + "&key=200378576-e3a2e829fd81fdf927812e2b50cb841b");
+
+      // Using the lat and lon, make an API call to retrieve nearby trails and append them to the html table as table rows 
+
+          getTrails(hikingApi);
+    });
+
+        $('#zip').click( function() {
         $('#enter-zip').toggle();
         $('#zip').toggle();
         $('#cancel').toggle();
@@ -26,12 +72,26 @@ $(document).ready(function() {
         $('#zip').toggle();
         $('#cancel').toggle();
         $('#search').toggle();
+        
     })
 
     $('#search').click( function() {
         zip = $('#enter-zip').val();
         console.log(zip);
-        //$('tbody tr').remove();
+        $('tbody tr').remove();
+        clicked = true;
+        $.getJSON("https://api.zippopotam.us/US/" + zip, function(search) {
+            lat = search.places[0].latitude;
+            lon = search.places[0].longitude;
+            city = search.places[0]["place name"];
+            region = search.places[0].state;
+            $("#near").empty();
+            $("#near").html("Near: ")
+            $("#near").append(city + ", " + region);
+            searchApi = ("https://www.hikingproject.com/data/get-trails?lat=" + lat + "&lon=" + lon + "&maxDistance=" + distanceAway + "&maxResults=" + maxResults + "&sort=" + sortBy + "&minLength=" + minLength + "&key=200378576-e3a2e829fd81fdf927812e2b50cb841b");
+
+            getTrails(searchApi);
+        })
     })
 
     // Working on adding a function that will allow user to search via ZIP code
@@ -43,36 +103,6 @@ $(document).ready(function() {
 
         })
     }*/
-
-    $.getJSON("https://ipapi.co/json/", function(json) {
-      lat = (json.latitude);
-      lon = (json.longitude);
-      city = (json.city);
-      region = (json.region);
-      $("#near").append(city + ", " + region);
-      maxResults = 10;
-      distanceAway = 30;
-      sortBy = "quality";
-      minLength = 0;
-      hikingApi = ("https://www.hikingproject.com/data/get-trails?lat=" + lat + "&lon=" + lon + "&maxDistance=" + distanceAway + "&maxResults=" + maxResults + "&sort=" + sortBy + "&minLength=" + minLength + "&key=200378576-e3a2e829fd81fdf927812e2b50cb841b");
-      console.log(hikingApi);
-
-      // Using the lat and lon, make an API call to retrieve nearby trails and append them to the html table as table rows 
-
-          $.getJSON(hikingApi, function(data) {
-        var len = data.trails.length;
-        for (var i = 0; i < len; i++) {
-            var name = data.trails[i].name;
-            var location = data.trails[i].location;
-            var length = data.trails[i].length;
-            var summary = data.trails[i].summary;
-            var image = data.trails[i].imgSqSmall;
-            var url = data.trails[i].url;
-            $('#table tbody').append('<tr><td>'+ '<a href=' + url + ' target="_blank">' + name + '</a>' + '</td><td>'+location+'</td><td>'+length+' '+'miles'+'</td><td>'+summary+'</td>'/*<td>'+'<img src='+image+'>'+'</td>''<td>'+url+'</td>*/+'</tr>');
-            console.log(hikingApi);
-        }
-      });
-    });
 
     // Removes table data and makes a new API call with new value when the results dropdown is changed
 
@@ -98,21 +128,16 @@ $(document).ready(function() {
                 break;
         }
 
-        hikingApi = ("https://www.hikingproject.com/data/get-trails?lat=" + lat + "&lon=" + lon + "&maxDistance=" + distanceAway + "&maxResults=" + maxResults + "&sort=" + sortBy + "&minLength=" + minLength + "&key=200378576-e3a2e829fd81fdf927812e2b50cb841b");
+        if (clicked == true) {
+            hikingApi = ("https://www.hikingproject.com/data/get-trails?lat=" + lat + "&lon=" + lon + "&maxDistance=" + distanceAway + "&maxResults=" + maxResults + "&sort=" + sortBy + "&minLength=" + minLength + "&key=200378576-e3a2e829fd81fdf927812e2b50cb841b");
+        }
 
-        $.getJSON(hikingApi, function(data) {
-            var len = data.trails.length;
-            for (var i = 0; i < len; i++) {
-                var name = data.trails[i].name;
-                var location = data.trails[i].location;
-                var length = data.trails[i].length;
-                var summary = data.trails[i].summary;
-                var image = data.trails[i].imgSqSmall;
-                var url = data.trails[i].url;
-                $('#table tbody').append('<tr><td>'+name+'</td><td>'+location+'</td><td>'+length+' '+'miles'+'</td><td>'+summary+'</td>'/*<td>'+'<img src='+image+'>'+'</td>''<td>'+url+'</td>*/+'</tr>');
-            }
-    
-          });
+        else {
+            hikingApi = ("https://www.hikingproject.com/data/get-trails?lat=" + autoLat + "&lon=" + autoLon + "&maxDistance=" + distanceAway + "&maxResults=" + maxResults + "&sort=" + sortBy + "&minLength=" + minLength + "&key=200378576-e3a2e829fd81fdf927812e2b50cb841b");
+        }
+
+
+        getTrails(hikingApi);
     })
 
 // Removes table data and makes a new API call with new value when the distance away dropdown is changed
@@ -139,21 +164,15 @@ $(document).ready(function() {
                 break;
         }
 
-        hikingApi = ("https://www.hikingproject.com/data/get-trails?lat=" + lat + "&lon=" + lon + "&maxDistance=" + distanceAway + "&maxResults=" + maxResults + "&sort=" + sortBy + "&minLength=" + minLength + "&key=200378576-e3a2e829fd81fdf927812e2b50cb841b");
+        if (clicked == true) {
+            hikingApi = ("https://www.hikingproject.com/data/get-trails?lat=" + lat + "&lon=" + lon + "&maxDistance=" + distanceAway + "&maxResults=" + maxResults + "&sort=" + sortBy + "&minLength=" + minLength + "&key=200378576-e3a2e829fd81fdf927812e2b50cb841b");
+        }
 
-        $.getJSON(hikingApi, function(data) {
-            var len = data.trails.length;
-            for (var i = 0; i < len; i++) {
-                var name = data.trails[i].name;
-                var location = data.trails[i].location;
-                var length = data.trails[i].length;
-                var summary = data.trails[i].summary;
-                var image = data.trails[i].imgSqSmall;
-                var url = data.trails[i].url;
-                $('#table tbody').append('<tr><td>'+name+'</td><td>'+location+'</td><td>'+length+' '+'miles'+'</td><td>'+summary+'</td>'/*<td>'+'<img src='+image+'>'+'</td>''<td>'+url+'</td>*/+'</tr>');
-            }
-    
-          });
+        else {
+            hikingApi = ("https://www.hikingproject.com/data/get-trails?lat=" + autoLat + "&lon=" + autoLon + "&maxDistance=" + distanceAway + "&maxResults=" + maxResults + "&sort=" + sortBy + "&minLength=" + minLength + "&key=200378576-e3a2e829fd81fdf927812e2b50cb841b");
+        }
+
+        getTrails(hikingApi);
     })
 
 // Removes table data and makes a new API call with new value when the sort by dropdown is changed
@@ -171,21 +190,15 @@ $(document).ready(function() {
                 break;
         }
 
-        hikingApi = ("https://www.hikingproject.com/data/get-trails?lat=" + lat + "&lon=" + lon + "&maxDistance=" + distanceAway + "&maxResults=" + maxResults + "&sort=" + sortBy + "&minLength=" + minLength + "&key=200378576-e3a2e829fd81fdf927812e2b50cb841b");
+        if (clicked == true) {
+            hikingApi = ("https://www.hikingproject.com/data/get-trails?lat=" + lat + "&lon=" + lon + "&maxDistance=" + distanceAway + "&maxResults=" + maxResults + "&sort=" + sortBy + "&minLength=" + minLength + "&key=200378576-e3a2e829fd81fdf927812e2b50cb841b");
+        }
 
-        $.getJSON(hikingApi, function(data) {
-            var len = data.trails.length;
-            for (var i = 0; i < len; i++) {
-                var name = data.trails[i].name;
-                var location = data.trails[i].location;
-                var length = data.trails[i].length;
-                var summary = data.trails[i].summary;
-                var image = data.trails[i].imgSqSmall;
-                var url = data.trails[i].url;
-                $('#table tbody').append('<tr><td>'+name+'</td><td>'+location+'</td><td>'+length+' '+'miles'+'</td><td>'+summary+'</td>'/*<td>'+'<img src='+image+'>'+'</td>''<td>'+url+'</td>*/+'</tr>');
-            }
-    
-          });
+        else {
+            hikingApi = ("https://www.hikingproject.com/data/get-trails?lat=" + autoLat + "&lon=" + autoLon + "&maxDistance=" + distanceAway + "&maxResults=" + maxResults + "&sort=" + sortBy + "&minLength=" + minLength + "&key=200378576-e3a2e829fd81fdf927812e2b50cb841b");
+        }
+
+        getTrails(hikingApi);
     })
 
 // Removes table data and makes a new API call with new value when the min length dropdown is changed
@@ -209,21 +222,15 @@ $(document).ready(function() {
                 break;
         }
 
-        hikingApi = ("https://www.hikingproject.com/data/get-trails?lat=" + lat + "&lon=" + lon + "&maxDistance=" + distanceAway + "&maxResults=" + maxResults + "&sort=" + sortBy + "&minLength=" + minLength + "&key=200378576-e3a2e829fd81fdf927812e2b50cb841b");
+        if (clicked == true) {
+            hikingApi = ("https://www.hikingproject.com/data/get-trails?lat=" + lat + "&lon=" + lon + "&maxDistance=" + distanceAway + "&maxResults=" + maxResults + "&sort=" + sortBy + "&minLength=" + minLength + "&key=200378576-e3a2e829fd81fdf927812e2b50cb841b");
+        }
 
-        $.getJSON(hikingApi, function(data) {
-            var len = data.trails.length;
-            for (var i = 0; i < len; i++) {
-                var name = data.trails[i].name;
-                var location = data.trails[i].location;
-                var length = data.trails[i].length;
-                var summary = data.trails[i].summary;
-                var image = data.trails[i].imgSqSmall;
-                var url = data.trails[i].url;
-                $('#table tbody').append('<tr><td>'+name+'</td><td>'+location+'</td><td>'+length+' '+'miles'+'</td><td>'+summary+'</td>'/*<td>'+'<img src='+image+'>'+'</td>''<td>'+url+'</td>*/+'</tr>');
-            }
-    
-          });
+        else {
+            hikingApi = ("https://www.hikingproject.com/data/get-trails?lat=" + autoLat + "&lon=" + autoLon + "&maxDistance=" + distanceAway + "&maxResults=" + maxResults + "&sort=" + sortBy + "&minLength=" + minLength + "&key=200378576-e3a2e829fd81fdf927812e2b50cb841b");
+        }
+
+        getTrails(hikingApi);
     })
 
 
