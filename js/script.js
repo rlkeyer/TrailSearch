@@ -8,8 +8,41 @@ $(document).ready(function() {
     var distanceAway;
     var sortBy;
     var minLength;
+    var zip;
+    var zipApi;
 
     // Make an API call to determine the user's latitude and longitude using their IP address
+
+    $('#zip').click( function() {
+        console.log("click worked")
+        $('#enter-zip').toggle();
+        $('#zip').toggle();
+        $('#cancel').toggle();
+        $('#search').toggle();
+    })
+
+    $('#cancel').click( function() {
+        $('#enter-zip').toggle();
+        $('#zip').toggle();
+        $('#cancel').toggle();
+        $('#search').toggle();
+    })
+
+    $('#search').click( function() {
+        zip = $('#enter-zip').val();
+        console.log(zip);
+        //$('tbody tr').remove();
+    })
+
+    // Working on adding a function that will allow user to search via ZIP code
+
+    /*zipApi = "http://api.zippopotam.us/US/" + zip;
+
+    if (value) {
+        $.getJSON(zipApi, function(zipData) {
+
+        })
+    }*/
 
     $.getJSON("https://ipapi.co/json/", function(json) {
       lat = (json.latitude);
@@ -18,14 +51,15 @@ $(document).ready(function() {
       region = (json.region);
       $("#near").append(city + ", " + region);
       maxResults = 10;
-      distanceAway = 10;
+      distanceAway = 30;
       sortBy = "quality";
       minLength = 0;
       hikingApi = ("https://www.hikingproject.com/data/get-trails?lat=" + lat + "&lon=" + lon + "&maxDistance=" + distanceAway + "&maxResults=" + maxResults + "&sort=" + sortBy + "&minLength=" + minLength + "&key=200378576-e3a2e829fd81fdf927812e2b50cb841b");
+      console.log(hikingApi);
 
       // Using the lat and lon, make an API call to retrieve nearby trails and append them to the html table as table rows 
 
-      $.getJSON(hikingApi, function(data) {
+          $.getJSON(hikingApi, function(data) {
         var len = data.trails.length;
         for (var i = 0; i < len; i++) {
             var name = data.trails[i].name;
@@ -34,7 +68,7 @@ $(document).ready(function() {
             var summary = data.trails[i].summary;
             var image = data.trails[i].imgSqSmall;
             var url = data.trails[i].url;
-            $('#table tbody').append('<tr><td>'+name+'</td><td>'+location+'</td><td>'+length+' '+'miles'+'</td><td>'+summary+'</td>'/*<td>'+'<img src='+image+'>'+'</td>''<td>'+url+'</td>*/+'</tr>');
+            $('#table tbody').append('<tr><td>'+ '<a href=' + url + ' target="_blank">' + name + '</a>' + '</td><td>'+location+'</td><td>'+length+' '+'miles'+'</td><td>'+summary+'</td>'/*<td>'+'<img src='+image+'>'+'</td>''<td>'+url+'</td>*/+'</tr>');
             console.log(hikingApi);
         }
       });

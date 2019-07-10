@@ -13,8 +13,15 @@
     <div class="container">
         <h1 id="title">Hiking Trails</h1>
         <h6 id="near">Near: </h6>
+        <div id="zip-div">
+            <a href="#" id="zip">Search by ZIP</a>
+            <a href="#" id="search">Search</a>
+            <input type="text" size="4" id="enter-zip">
+            
+            <a href="#" id="cancel">cancel</a>
+        </div>
         <div class="filters">
-                <p>Results: </p>
+                <p class="dropdown">Results: </p>
                 <select id="results" name="results">
                     <option value="10">10</option>
                     <option value="20">20</option>
@@ -22,7 +29,7 @@
                     <option value="40">40</option>
                     <option value="50">50</option>
                 </select>
-                <p>Distance away: </p>
+                <p class="dropdown">Distance away: </p>
                 <select id="distance-away" name="distance-away">
                     <option value="10">10</option>
                     <option value="20">20</option>
@@ -31,12 +38,12 @@
                     <option value="50">50</option>
                 </select>
                 <div id="sort">
-                    <p>Sort by: </p>
+                    <p class="dropdown">Sort by: </p>
                     <select id="sort-by" name="sort-by">
                         <option value="quality">Quality</option>
                         <option value="distance">Distance</option>
                     </select>
-                    <p>Min Length: </p>
+                    <p class="dropdown">Min Length: </p>
                     <select id="min-length" name="min-length">
                         <option value="0">0</option>
                         <option value="2">2</option>
