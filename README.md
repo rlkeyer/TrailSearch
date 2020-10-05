@@ -1,5 +1,7 @@
 # Trail Search
 
+This project is deployed at: https://trail-search.vercel.app/
+
 #### Introduction
 
 This is a simple application that finds your location from your IP address and displays nearby hiking trails in a table.
