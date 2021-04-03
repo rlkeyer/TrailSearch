@@ -3,20 +3,12 @@ $(document).ready(function () {
   var searchApi;
   var autoLat;
   var autoLon;
-  var autoCity;
-  var autoRegion;
   var maxResults;
   var distanceAway;
   var sortBy;
   var minLength;
   var zip;
   var zipApi;
-  var autoName;
-  var autoLocation;
-  var autoLength;
-  var autoSummary;
-  var autoImage;
-  var autoUrl;
   var lat;
   var lon;
   var city;
@@ -29,31 +21,10 @@ $(document).ready(function () {
     $.getJSON(apiUrl, function (data) {
       var len = data.trails.length;
       for (var i = 0; i < len; i++) {
-        autoName = data.trails[i].name;
-        autoLocation = data.trails[i].location;
-        autoLength = data.trails[i].length;
-        autoSummary = data.trails[i].summary;
-        autoImage = data.trails[i].imgSqSmall;
-        autoUrl = data.trails[i].url;
+        const { name, location, length, summary, url } = data.trails[i];
         $("#table tbody").append(
-          "<tr><td>" +
-            "<a href=" +
-            autoUrl +
-            ' target="_blank">' +
-            autoName +
-            "</a>" +
-            "</td><td>" +
-            autoLocation +
-            "</td><td>" +
-            autoLength +
-            " " +
-            "miles" +
-            "</td><td>" +
-            autoSummary +
-            "</td>" /*<td>'+'<img src='+autoImage+'>'+'</td>''<td>'+autoUrl+'</td>*/ +
-            "</tr>"
+          `<tr><td><a href="${url}" target="_blank">${name}</a></td><td>${location}</td><td>${length} miles</td><td>${summary}</td></tr>`
         );
-        console.log(hikingApi);
       }
     });
   }
@@ -61,20 +32,13 @@ $(document).ready(function () {
   // Make an API call to determine the user's latitude and longitude using their IP address
 
   $.getJSON("https://ipapi.co/json/", function (json) {
-    autoLat = json.latitude;
-    autoLon = json.longitude;
-    autoCity = json.city;
-    autoRegion = json.region;
-    $("#near").append(autoCity + ", " + autoRegion);
-    maxResults = 10;
-    distanceAway = 30;
-    sortBy = "quality";
-    minLength = 0;
-    hikingApi = `https://www.hikingproject.com/data/get-trails?lat=${autoLat}&lon=${autoLon}&maxDistance=${distanceAway}&maxResults=${maxResults}&sort=${sortBy}&minLength=${minLength}&key=200378576-e3a2e829fd81fdf927812e2b50cb841b`;
+    const { latitude, longitude, city, region } = json;
+    $("#near").append(city + ", " + region);
+    let reqString = `https://www.hikingproject.com/data/get-trails?lat=${latitude}&lon=${longitude}&maxDistance=30&maxResults=10&sort=quality&minLength=0&key=200378576-e3a2e829fd81fdf927812e2b50cb841b`;
 
     // Using the lat and lon, make an API call to retrieve nearby trails and append them to the html table as table rows
 
-    getTrails(hikingApi);
+    getTrails(reqString);
   });
 
   $("#zip").click(function () {
@@ -92,7 +56,7 @@ $(document).ready(function () {
   });
 
   $("#search").click(function () {
-    zip = $("#enter-zip").val();
+    let zip = $("#enter-zip").val();
     $("tbody tr").remove();
     clicked = true;
     $.getJSON(`https://api.zippopotam.us/US/${zip}`, function () {})
@@ -116,8 +80,8 @@ $(document).ready(function () {
 
   // Removes table data and makes a new API call with new value when the results dropdown is changed
 
-  $("#maxResults").change(function () {
-    var result = document.getElementById("maxResults").value;
+  const updateTrails = (dropdownId) => {
+    let result = document.getElementById(dropdownId).value;
     $("tbody tr").remove();
     maxResults = result;
     hikingApi = `https://www.hikingproject.com/data/get-trails?lat=${
@@ -126,13 +90,14 @@ $(document).ready(function () {
       clicked ? lon : autoLon
     }&maxDistance=${distanceAway}&maxResults=${maxResults}&sort=${sortBy}&minLength=${minLength}&key=200378576-e3a2e829fd81fdf927812e2b50cb841b`;
     getTrails(hikingApi);
-  });
+  };
+
+  $("#maxResults").change(updateTrails("maxResults"));
 
   // Removes table data and makes a new API call with new value when the distance away dropdown is changed
 
   $("#distanceAway").change(function () {
-    console.log("changed");
-    var result = document.getElementById("distanceAway").value;
+    let result = document.getElementById("distanceAway").value;
     $("tbody tr").remove();
     distanceAway = result;
     hikingApi = `https://www.hikingproject.com/data/get-trails?lat=${
